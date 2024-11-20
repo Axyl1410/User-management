@@ -1,0 +1,162 @@
+﻿<!-- Form được xây dựng lại theo Material Design -->
+
+<div class="card">
+    <div class="card-header">
+        <h5 class="card-title">Submit Student Information</h5>
+    </div>
+    <div class="card-body">
+        <form id="studentForm">
+            <!-- Name Field -->
+            <div class="form-group">
+                <label for="name" class="bmd-label-floating">Name</label>
+                <input type="text" id="name" name="name" class="form-control" required>
+            </div>
+
+            <!-- Date of Birth Field -->
+            <div class="form-group">
+                <label for="dob" class="bmd-label-floating">Date of Birth</label>
+                <input type="date" id="dob" name="dob" class="form-control" required>
+            </div>
+
+            <!-- Student ID Field -->
+            <div class="form-group">
+                <label for="student_id" class="bmd-label-floating">Student ID</label>
+                <input type="text" id="student_id" name="student_id" class="form-control" required>
+            </div>
+
+            <!-- Gender Field -->
+            <div class="form-group">
+                <label for="gender" class="bmd-label-floating">Gender</label>
+                <select id="gender" name="gender" class="form-control">
+                    <option value="Nam">Nam</option>
+                    <option value="Nữ">Nữ</option>
+                </select>
+            </div>
+
+            <!-- Class Name Field -->
+            <div class="form-group">
+                <label for="class_name" class="bmd-label-floating">Class Name</label>
+                <input type="text" id="class_name" name="class_name" class="form-control" required>
+            </div>
+
+            <!-- Department Field - vẫn giữ là input -->
+            <div class="form-group">
+                <label for="department" class="bmd-label-floating">Department</label>
+                <input type="text" id="department" name="department" class="form-control" required>
+
+                <!-- Dropdown list hiện khi click vào input -->
+                <ul id="departmentList" class="dropdown-list" style="display: none;">
+                    <!-- Các lựa chọn sẽ được thêm động từ JavaScript -->
+                </ul>
+            </div>
+
+            <!-- Image Upload -->
+            <div class="form-group">
+                <label for="image">Upload Image</label>
+                <input type="file" id="image" name="image" class="form-control" accept="image/*" required>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-group">
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </div>
+        </form>
+
+        <p id="status"></p>
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Danh sách department giả lập
+        var departments = [
+            { id: 'IT', name: 'Khoa CNTT' },
+            { id: 'EC', name: 'Khoa Điện tử' },
+            { id: 'EE', name: 'Khoa Xây dựng' }
+        ];
+
+        // Khi người dùng click vào ô department, hiển thị danh sách lựa chọn
+        $('#department').on('focus click', function () {
+            $('#departmentList').show(); // Hiển thị danh sách
+        });
+
+        // Khi người dùng click ra ngoài, ẩn danh sách
+        $(document).click(function (event) {
+            if (!$(event.target).closest('#department').length && !$(event.target).closest('#departmentList').length) {
+                $('#departmentList').hide(); // Ẩn danh sách
+            }
+        });
+
+        // Thêm các lựa chọn department vào danh sách dropdown
+        departments.forEach(function (department) {
+            $('#departmentList').append(
+                $('<li>', {
+                    text: department.name,
+                    class: 'dropdown-item'
+                }).on('click', function () {
+                    $('#department').val(department.name); // Gán giá trị đã chọn vào ô input
+                    $('#departmentList').hide(); // Ẩn danh sách sau khi chọn
+                })
+            );
+        });
+
+        // Submit form
+        $('#studentForm').submit(function (event) {
+            alert('Đã lưu dữ liệu thành công');
+            event.preventDefault(); // Ngăn submit mặc định của form
+
+            // Lấy dữ liệu từ form
+            var formData = new FormData();
+            formData.append('name', $('#name').val());
+            formData.append('dob', $('#dob').val());
+            formData.append('student_id', $('#student_id').val());
+            formData.append('gender', $('#gender').val());
+            formData.append('class_name', $('#class_name').val());
+            formData.append('department', $('#department').val()); // Lấy giá trị department từ ô input
+            formData.append('image', $('#image')[0].files[0]);
+
+            // Gửi AJAX request tới server
+            $.ajax({
+                url: 'http://127.0.0.1:8000/submit_info/',
+                type: 'POST',
+                data: formData,
+                processData: false, // Không xử lý dữ liệu
+                contentType: false, // Không đặt kiểu content-type
+                success: function (response) {
+                    alert('Dữ liệu đã được gửi thành công!');
+                },
+                error: function (xhr, status, error) {
+                    alert('Có lỗi xảy ra: ' + error);
+                }
+            });
+        });
+    });
+</script>
+
+<style>
+    /* Tạo kiểu cho danh sách dropdown */
+    .dropdown-list {
+        list-style-type: none;
+        padding-left: 0;
+        margin-top: 0;
+        max-height: 150px;
+        overflow-y: auto;
+        background-color: white;
+        position: absolute;
+        width: 96.9%;
+        z-index: 1000;
+    }
+
+    .dropdown-item {
+        padding: 10px;
+        cursor: pointer;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .dropdown-item:hover {
+        background-color: #1967D2;
+        color: white;
+     }
+</style>

@@ -1,0 +1,123 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="container-fluid">
+    <!-- -------------------------------------------------------------- -->
+    <!-- Start Page Content -->
+    <!-- -------------------------------------------------------------- -->
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Quản lý người dùng</h4>
+            <h6 class="card-subtitle lh-base">
+                Using the most basic table Leanne Grahamup, here’s how
+                .table-based tables look in Bootstrap. You can use any example
+                of below table for your table and it can be use with any type of
+                bootstrap tables.
+            </h6>
+        </div>
+        <div class="table-responsive">
+            <table class="table customize-table mb-0 v-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th class="border-bottom border-top">Id</th>
+                        <th class="border-bottom border-top">Họ và tên</th>
+                        <th class="border-bottom border-top">Ngày tháng năm sinh</th>
+                        <th class="border-bottom border-top">Mã số sinh viên</th>
+                        <th class="border-bottom border-top">Giới tính</th>
+                        <th class="border-bottom border-top">Chuyên ngành</th>
+                        <th class="border-bottom border-top">Khoa</th>
+                        <th class="border-bottom border-top">Ảnh</th>
+                        <th class="border-bottom border-top">Thời gian đăng ký</th>
+                     
+                  
+                        <th class="border-bottom border-top">Actions</th>
+
+                    </tr>
+                </thead>
+                <tbody id="studentTableBody">
+                     
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+  
+  
+    <!-- -------------------------------------------------------------- -->
+    <!-- End PAge Content -->
+    <!-- -------------------------------------------------------------- -->
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    // Hàm để gọi API và đưa dữ liệu vào bảng
+   
+    
+            async function loadStudentData() {
+                try {
+                    // Gọi API với fetch
+                    const response = await fetch('/getalllist');
+
+                    // Kiểm tra nếu API gọi thành công
+                    if (response.ok) {
+                        // Chuyển đổi dữ liệu JSON
+                        const students = await response.json();
+
+                        // Gọi hàm để hiển thị dữ liệu lên bảng
+                        populateTable(students);
+                    } else {
+                        console.error("Có lỗi xảy ra khi gọi API:", response.status);
+                    }
+                } catch (error) {
+                    console.error("Lỗi trong quá trình gọi API:", error);
+                }
+            }
+
+                // Hàm để đưa dữ liệu vào bảng
+                function populateTable(students) {
+                    const tableBody = $('#studentTableBody');
+
+        // Xóa sạch dữ liệu bảng trước khi đưa dữ liệu mới vào
+        tableBody.empty();
+
+                    // Duyệt qua từng sinh viên và thêm hàng (row) vào bảng
+                    students.forEach(student => {
+                        const row = $('<tr>');
+
+            $('<td>').text(student.id).appendTo(row);
+                $('<td>').text(student.name).appendTo(row);
+                    $('<td>').text(student.dob).appendTo(row);
+                        $('<td>').text(student.student_id).appendTo(row);
+                            $('<td>').text(student.gender).appendTo(row);
+                                $('<td>').text(student.class_name).appendTo(row);
+                                    $('<td>').text(student.department).appendTo(row);
+
+                                        // Xử lý hiển thị ảnh
+                                        const imgCell = $('<td>');
+                                            const img = $('<img>').attr('src', student.image_path).attr('width', '50');
+                                                img.appendTo(imgCell);
+                                                imgCell.appendTo(row);
+
+                                                $('<td>').text(student.timestamp).appendTo(row);
+
+                                                    // Thêm cột Action
+                                                    $('<td>').text("Action").appendTo(row);
+
+                                                        // Thêm hàng vào bảng
+                                                        tableBody.append(row);
+                    });
+                }
+
+                                                        // Gọi hàm để tải dữ liệu khi trang sẵn sàng
+                                                        loadStudentData();
+          
+
+   
+
+    // Gọi hàm khi tải trang
+    window.onload = function() {
+        loadStudentData();
+    };
+</script>
